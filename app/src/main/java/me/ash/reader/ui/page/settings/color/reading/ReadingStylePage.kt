@@ -43,6 +43,7 @@ import me.ash.reader.infrastructure.preference.LocalPullToSwitchArticle
 import me.ash.reader.infrastructure.preference.LocalReadingAutoHideToolbar
 import me.ash.reader.infrastructure.preference.LocalReadingBoldCharacters
 import me.ash.reader.infrastructure.preference.LocalReadingFonts
+import me.ash.reader.infrastructure.preference.LocalReadingHorizontalScroll
 import me.ash.reader.infrastructure.preference.LocalReadingPageTonalElevation
 import me.ash.reader.infrastructure.preference.LocalReadingRenderer
 import me.ash.reader.infrastructure.preference.LocalReadingTheme
@@ -82,6 +83,7 @@ fun ReadingStylePage(
     val fonts = LocalReadingFonts.current
     val autoHideToolbar = LocalReadingAutoHideToolbar.current
     val pullToSwitchArticle = LocalPullToSwitchArticle.current
+    val horizontalScroll = LocalReadingHorizontalScroll.current
     val renderer = LocalReadingRenderer.current
     val boldCharacters = LocalReadingBoldCharacters.current
 
@@ -210,6 +212,16 @@ fun ReadingStylePage(
                         RYSwitch(activated = pullToSwitchArticle.value, onClick = {
                             pullToSwitchArticle.toggle(context, scope)
                         })
+                    }
+
+                    SettingItem(
+                        title = stringResource(R.string.horizontal_scroll_mode),
+                        desc = stringResource(R.string.horizontal_scroll_mode_desc),
+                        onClick = { (!horizontalScroll).put(context, scope) }
+                    ) {
+                        RYSwitch(activated = horizontalScroll.value) {
+                            (!horizontalScroll).put(context, scope)
+                        }
                     }
                     Subtitle(
                         modifier = Modifier.padding(horizontal = 24.dp),

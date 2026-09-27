@@ -66,6 +66,10 @@ data class Settings(
     val readingImageHorizontalPadding: Int = ReadingImageHorizontalPaddingPreference.default,
     val readingImageRoundedCorners: Int = ReadingImageRoundedCornersPreference.default,
     val readingImageMaximize: ReadingImageMaximizePreference = ReadingImageMaximizePreference.default,
+    val readingHorizontalScroll: ReadingHorizontalScrollPreference = ReadingHorizontalScrollPreference.default,
+
+    // AI
+    val geminiApiKey: String = GeminiApiKeyPreference.default,
 
     // Interaction
     val initialPage: InitialPagePreference = InitialPagePreference.default,

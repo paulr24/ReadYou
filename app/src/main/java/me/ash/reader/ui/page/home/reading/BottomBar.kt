@@ -20,6 +20,7 @@ import androidx.compose.material.icons.automirrored.rounded.Article
 import androidx.compose.material.icons.filled.FiberManualRecord
 import androidx.compose.material.icons.outlined.FiberManualRecord
 import androidx.compose.material.icons.outlined.Headphones
+import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.rounded.ExpandMore
 import androidx.compose.material.icons.rounded.Star
 import androidx.compose.material.icons.rounded.StarOutline
@@ -59,6 +60,7 @@ fun BottomBar(
     onFullContent: (isFullContent: Boolean) -> Unit = {},
     onBoldCharacters: () -> Unit = {},
     onReadAloud: () -> Unit = {},
+    onSummarize: () -> Unit = {},
 ) {
     val tonalElevation = LocalReadingPageTonalElevation.current
     val isOutlined = tonalElevation == ReadingPageTonalElevationPreference.Outlined
@@ -142,6 +144,16 @@ fun BottomBar(
                             onNextArticle()
                         }
                         ttsButton()
+                        CanBeDisabledIconButton(
+                            modifier = Modifier.size(40.dp),
+                            disabled = false,
+                            imageVector = Icons.Rounded.AutoAwesome,
+                            contentDescription = stringResource(R.string.ai_summary),
+                            tint = MaterialTheme.colorScheme.outline,
+                        ) {
+                            view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                            onSummarize()
+                        }
                         CanBeDisabledIconButton(
                             disabled = false,
                             modifier = Modifier.size(40.dp),

@@ -125,6 +125,10 @@ class SettingsProvider @Inject constructor(
             LocalReadingImageHorizontalPadding provides settings.readingImageHorizontalPadding,
             LocalReadingImageRoundedCorners provides settings.readingImageRoundedCorners,
             LocalReadingImageMaximize provides settings.readingImageMaximize,
+            LocalReadingHorizontalScroll provides settings.readingHorizontalScroll,
+
+            // AI
+            LocalGeminiApiKey provides settings.geminiApiKey,
 
             // Interaction
             LocalInitialPage provides settings.initialPage,

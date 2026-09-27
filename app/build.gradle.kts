@@ -51,6 +51,19 @@ android {
             "\"ReadYou/${versionName}(${versionCode})\"",
         )
 
+        val geminiKey = rootProject.file("local.properties").let { file ->
+            if (file.exists()) {
+                val props = Properties()
+                props.load(FileInputStream(file))
+                props.getProperty("gemini.apiKey", "")
+            } else ""
+        }
+        buildConfigField(
+            "String",
+            "DEFAULT_GEMINI_API_KEY",
+            "\"${geminiKey}\"",
+        )
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
 

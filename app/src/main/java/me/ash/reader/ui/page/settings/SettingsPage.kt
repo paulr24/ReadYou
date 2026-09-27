@@ -16,6 +16,7 @@ import androidx.compose.material.icons.outlined.Lightbulb
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.TipsAndUpdates
 import androidx.compose.material.icons.outlined.TouchApp
+import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -23,16 +24,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import me.ash.reader.BuildConfig
 import me.ash.reader.R
+import me.ash.reader.infrastructure.preference.GeminiApiKeyPreference
+import me.ash.reader.infrastructure.preference.LocalGeminiApiKey
 import me.ash.reader.infrastructure.preference.LocalNewVersionNumber
 import me.ash.reader.infrastructure.preference.LocalSkipVersionNumber
 import me.ash.reader.infrastructure.preference.toDisplayName
+import me.ash.reader.ui.component.GeminiApiKeyDialog
 import me.ash.reader.ui.component.base.Banner
 import me.ash.reader.ui.component.base.DisplayText
 import me.ash.reader.ui.component.base.FeedbackIconButton
@@ -55,9 +62,12 @@ fun SettingsPage(
     navigateToTipsAndSupport: () -> Unit,
 ) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     val newVersion = LocalNewVersionNumber.current
     val skipVersion = LocalSkipVersionNumber.current
+    val geminiApiKey = LocalGeminiApiKey.current
     val currentVersion by remember { mutableStateOf(context.getCurrentVersion()) }
+    var showApiKeyDialog by remember { mutableStateOf(false) }
 
     RYScaffold(
         containerColor = MaterialTheme.colorScheme.surface onLight MaterialTheme.colorScheme.inverseOnSurface,
@@ -129,6 +139,16 @@ fun SettingsPage(
                 }
                 item {
                     SelectableSettingGroupItem(
+                        title = stringResource(R.string.ai_summary_settings),
+                        desc = if (geminiApiKey.isNotBlank()) stringResource(R.string.custom_api_key_set)
+                               else if (BuildConfig.DEFAULT_GEMINI_API_KEY.isNotBlank()) stringResource(R.string.default_api_key_active)
+                               else stringResource(R.string.api_key_not_configured),
+                        icon = Icons.Rounded.AutoAwesome,
+                        onClick = { showApiKeyDialog = true }
+                    )
+                }
+                item {
+                    SelectableSettingGroupItem(
                         title = stringResource(R.string.languages),
                         desc = Locale.getDefault().toDisplayName(),
                         icon = Icons.Outlined.Language,
@@ -160,4 +180,14 @@ fun SettingsPage(
     )
 
     UpdateDialog()
+
+    GeminiApiKeyDialog(
+        visible = showApiKeyDialog,
+        value = geminiApiKey,
+        onDismissRequest = { showApiKeyDialog = false },
+        onConfirm = {
+            GeminiApiKeyPreference.put(context, scope, it.trim())
+            showApiKeyDialog = false
+        }
+    )
 }

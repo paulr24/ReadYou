@@ -39,6 +39,7 @@ import me.ash.reader.domain.service.GoogleReaderRssService
 import me.ash.reader.domain.service.LocalRssService
 import me.ash.reader.domain.service.RssService
 import me.ash.reader.domain.service.SyncWorker
+import me.ash.reader.infrastructure.ai.GeminiSummaryService
 import me.ash.reader.infrastructure.android.AndroidImageDownloader
 import me.ash.reader.infrastructure.android.TextToSpeechManager
 import me.ash.reader.infrastructure.di.ApplicationScope
@@ -46,6 +47,7 @@ import me.ash.reader.infrastructure.di.IODispatcher
 import me.ash.reader.infrastructure.preference.PullToLoadNextFeedPreference
 import me.ash.reader.infrastructure.preference.SettingsProvider
 import me.ash.reader.infrastructure.rss.ReaderCacheHelper
+import me.ash.reader.ui.page.home.reading.SummaryState
 import timber.log.Timber
 
 private const val TAG = "FlowViewModel"
@@ -66,6 +68,7 @@ constructor(
     val textToSpeechManager: TextToSpeechManager,
     private val imageDownloader: AndroidImageDownloader,
     private val articleListUseCase: ArticlePagingListUseCase,
+    private val geminiSummaryService: GeminiSummaryService,
     workManager: WorkManager,
 ) : ViewModel() {
 
@@ -265,6 +268,9 @@ constructor(
     private val _readerState: MutableStateFlow<ReaderState> = MutableStateFlow(ReaderState())
     val readerStateStateFlow = _readerState.asStateFlow()
 
+    private val _summaryState: MutableStateFlow<SummaryState> = MutableStateFlow(SummaryState.Idle)
+    val summaryState: StateFlow<SummaryState> = _summaryState.asStateFlow()
+
     private val currentArticle: Article?
         get() = readingUiState.value.articleWithFeed?.article
 
@@ -296,6 +302,7 @@ constructor(
             if (diffMapHolder.checkIfUnread(item)) {
                 diffMapHolder.updateDiff(item, isUnread = false)
             }
+            _summaryState.value = SummaryState.Idle
             item.run {
                 _readingUiState.update {
                     it.copy(articleWithFeed = this, isStarred = article.isStarred, isUnread = false)
@@ -319,6 +326,7 @@ constructor(
     fun clearReadingData() {
         _readingUiState.update { ReadingUiState() }
         _readerState.update { ReaderState() }
+        _summaryState.value = SummaryState.Idle
     }
 
     suspend fun ReaderState.renderContent(articleWithFeed: ArticleWithFeed): ReaderState {
@@ -443,6 +451,27 @@ constructor(
         viewModelScope.launch {
             imageDownloader.downloadImage(url).onSuccess(onSuccess).onFailure(onFailure)
         }
+    }
+
+    fun summarizeArticle() {
+        val article = currentArticle ?: return
+        val title = article.title ?: ""
+        val content = _readerState.value.content.text ?: article.rawDescription ?: ""
+        if (content.isBlank()) return
+
+        viewModelScope.launch {
+            _summaryState.value = SummaryState.Loading
+            val result = geminiSummaryService.summarize(title, content)
+            result.onSuccess {
+                _summaryState.value = SummaryState.Success(it)
+            }.onFailure {
+                _summaryState.value = SummaryState.Error(it.message ?: "Failed to summarize article")
+            }
+        }
+    }
+
+    fun dismissSummary() {
+        _summaryState.value = SummaryState.Idle
     }
 }
 

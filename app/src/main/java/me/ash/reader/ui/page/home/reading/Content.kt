@@ -47,6 +47,9 @@ fun Content(
     listState: LazyListState,
     isLoading: Boolean,
     contentPadding: PaddingValues = PaddingValues(),
+    summaryState: SummaryState = SummaryState.Idle,
+    onSummarize: () -> Unit = {},
+    onDismissSummary: () -> Unit = {},
     onImageClick: ((imgUrl: String, altText: String) -> Unit)? = null,
 ) {
     val context = LocalContext.current
@@ -72,6 +75,17 @@ fun Content(
             }
         }
 
+    val summaryContent =
+        @Composable {
+            Column(modifier = Modifier.then(maxWidthModifier)) {
+                SummaryCard(
+                    summaryState = summaryState,
+                    onSummarize = onSummarize,
+                    onDismiss = onDismissSummary,
+                )
+            }
+        }
+
     if (isLoading) {
         Column { LoadingIndicator(modifier = Modifier.size(56.dp)) }
     } else {
@@ -94,6 +108,7 @@ fun Content(
                             Spacer(modifier = Modifier.height(64.dp))
                             // padding
                             headline()
+                            summaryContent()
 
                             RYWebView(
                                 modifier = Modifier.fillMaxSize(),
@@ -123,6 +138,7 @@ fun Content(
                             // padding
                             Spacer(modifier = Modifier.height(contentPadding.calculateTopPadding()))
                             headline()
+                            summaryContent()
                         }
 
                         Reader(

@@ -184,6 +184,10 @@ sealed interface PreferencesKey {
         const val readingImageMaximize = "readingImageMaximize"
         const val readingImageHorizontalPadding = "readingImageHorizontalPadding"
         const val readingImageRoundedCorners = "readingImageRoundedCorners"
+        const val readingHorizontalScroll = "readingHorizontalScroll"
+
+        // AI
+        const val geminiApiKey = "geminiApiKey"
 
         // Interaction
         const val initialPage = "initialPage"
@@ -261,6 +265,9 @@ sealed interface PreferencesKey {
                 BooleanKey(readingImageMaximize),
                 IntKey(readingImageHorizontalPadding),
                 IntKey(readingImageRoundedCorners),
+                BooleanKey(readingHorizontalScroll),
+                // AI
+                StringKey(geminiApiKey),
                 // Interaction
                 IntKey(initialPage),
                 IntKey(initialFilter),
@@ -346,6 +353,10 @@ data class DataStoreKey<T>(val key: Preferences.Key<T>, val type: Class<T>) {
         const val readingImageMaximize = "readingImageMaximize"
         const val readingImageHorizontalPadding = "readingImageHorizontalPadding"
         const val readingImageRoundedCorners = "readingImageRoundedCorners"
+        const val readingHorizontalScroll = "readingHorizontalScroll"
+
+        // AI
+        const val geminiApiKey = "geminiApiKey"
 
         // Interaction
         const val initialPage = "initialPage"
