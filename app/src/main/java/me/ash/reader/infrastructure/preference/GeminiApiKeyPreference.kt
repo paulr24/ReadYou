@@ -3,6 +3,7 @@ package me.ash.reader.infrastructure.preference
 import android.content.Context
 import androidx.compose.runtime.compositionLocalOf
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import me.ash.reader.ui.ext.DataStoreKey
@@ -14,6 +15,7 @@ val LocalGeminiApiKey = compositionLocalOf { GeminiApiKeyPreference.default }
 
 object GeminiApiKeyPreference {
     const val default = ""
+    private val key = stringPreferencesKey(geminiApiKey)
 
     fun put(context: Context, scope: CoroutineScope, value: String) {
         scope.launch {
@@ -22,5 +24,5 @@ object GeminiApiKeyPreference {
     }
 
     fun fromPreferences(preferences: Preferences): String =
-        preferences[DataStoreKey.keys[geminiApiKey]?.key as Preferences.Key<String>] ?: default
+        preferences[key] ?: default
 }

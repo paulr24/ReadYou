@@ -501,6 +501,10 @@ data class DataStoreKey<T>(val key: Preferences.Key<T>, val type: Class<T>) {
                     DataStoreKey(intPreferencesKey(readingImageHorizontalPadding), Int::class.java),
                 readingImageRoundedCorners to
                     DataStoreKey(intPreferencesKey(readingImageRoundedCorners), Int::class.java),
+                readingHorizontalScroll to
+                    DataStoreKey(booleanPreferencesKey(readingHorizontalScroll), Boolean::class.java),
+                geminiApiKey to
+                    DataStoreKey(stringPreferencesKey(geminiApiKey), String::class.java),
                 // Interaction
                 initialPage to DataStoreKey(intPreferencesKey(initialPage), Int::class.java),
                 initialFilter to DataStoreKey(intPreferencesKey(initialFilter), Int::class.java),

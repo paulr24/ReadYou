@@ -3,6 +3,7 @@ package me.ash.reader.infrastructure.preference
 import android.content.Context
 import androidx.compose.runtime.compositionLocalOf
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import me.ash.reader.ui.ext.DataStoreKey
@@ -27,9 +28,10 @@ sealed class ReadingHorizontalScrollPreference(val value: Boolean) : Preference(
 
         val default = OFF
         val values = listOf(ON, OFF)
+        private val key = booleanPreferencesKey(readingHorizontalScroll)
 
         fun fromPreferences(preferences: Preferences) =
-            when (preferences[DataStoreKey.keys[readingHorizontalScroll]?.key as Preferences.Key<Boolean>]) {
+            when (preferences[key]) {
                 true -> ON
                 false -> OFF
                 else -> default
