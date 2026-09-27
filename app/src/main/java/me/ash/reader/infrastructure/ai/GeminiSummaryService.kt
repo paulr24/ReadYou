@@ -8,6 +8,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import me.ash.reader.BuildConfig
 import me.ash.reader.infrastructure.di.IODispatcher
+import me.ash.reader.infrastructure.preference.GeminiModelPreference
 import me.ash.reader.infrastructure.preference.SettingsProvider
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
@@ -34,6 +35,10 @@ class GeminiSummaryService @Inject constructor(
                 return@withContext Result.failure(IllegalStateException("No Gemini API key configured"))
             }
 
+            val model = settingsProvider.getOrDefault("geminiModel", "").let {
+                if (it.isBlank()) GeminiModelPreference.default else it.trim()
+            }
+
             val cleanContent = articleContent.replace(Regex("<[^>]*>"), " ").replace(Regex("\\s+"), " ").trim()
             val truncatedContent = if (cleanContent.length > 15000) cleanContent.substring(0, 15000) else cleanContent
             
@@ -53,14 +58,15 @@ class GeminiSummaryService @Inject constructor(
             val requestBody = gson.toJson(requestBodyObj).toRequestBody(jsonMediaType)
             
             val request = Request.Builder()
-                .url("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=$apiKey")
+                .url("https://generativelanguage.googleapis.com/v1beta/models/$model:generateContent?key=$apiKey")
                 .post(requestBody)
                 .build()
 
             val response = okHttpClient.newCall(request).execute()
             
             if (!response.isSuccessful) {
-                return@withContext Result.failure(Exception("API returned error: ${response.code}"))
+                val errorMsg = response.body?.string() ?: ""
+                return@withContext Result.failure(Exception("API returned error: ${response.code} $errorMsg"))
             }
             
             val responseBodyStr = response.body?.string() ?: return@withContext Result.failure(Exception("Empty response body"))

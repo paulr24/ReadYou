@@ -129,6 +129,7 @@ class SettingsProvider @Inject constructor(
 
             // AI
             LocalGeminiApiKey provides settings.geminiApiKey,
+            LocalGeminiModel provides settings.geminiModel,
 
             // Interaction
             LocalInitialPage provides settings.initialPage,

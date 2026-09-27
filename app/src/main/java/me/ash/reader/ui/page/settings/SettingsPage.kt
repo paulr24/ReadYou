@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.filled.Key
 import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.BugReport
 import androidx.compose.material.icons.outlined.Language
@@ -35,11 +36,14 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import me.ash.reader.BuildConfig
 import me.ash.reader.R
 import me.ash.reader.infrastructure.preference.GeminiApiKeyPreference
+import me.ash.reader.infrastructure.preference.GeminiModelPreference
 import me.ash.reader.infrastructure.preference.LocalGeminiApiKey
+import me.ash.reader.infrastructure.preference.LocalGeminiModel
 import me.ash.reader.infrastructure.preference.LocalNewVersionNumber
 import me.ash.reader.infrastructure.preference.LocalSkipVersionNumber
 import me.ash.reader.infrastructure.preference.toDisplayName
 import me.ash.reader.ui.component.GeminiApiKeyDialog
+import me.ash.reader.ui.component.GeminiModelDialog
 import me.ash.reader.ui.component.base.Banner
 import me.ash.reader.ui.component.base.DisplayText
 import me.ash.reader.ui.component.base.FeedbackIconButton
@@ -66,8 +70,10 @@ fun SettingsPage(
     val newVersion = LocalNewVersionNumber.current
     val skipVersion = LocalSkipVersionNumber.current
     val geminiApiKey = LocalGeminiApiKey.current
+    val geminiModel = LocalGeminiModel.current
     val currentVersion by remember { mutableStateOf(context.getCurrentVersion()) }
     var showApiKeyDialog by remember { mutableStateOf(false) }
+    var showModelDialog by remember { mutableStateOf(false) }
 
     RYScaffold(
         containerColor = MaterialTheme.colorScheme.surface onLight MaterialTheme.colorScheme.inverseOnSurface,
@@ -139,11 +145,19 @@ fun SettingsPage(
                 }
                 item {
                     SelectableSettingGroupItem(
-                        title = stringResource(R.string.ai_summary_settings),
+                        title = stringResource(R.string.gemini_model),
+                        desc = geminiModel.ifBlank { GeminiModelPreference.default },
+                        icon = Icons.Rounded.AutoAwesome,
+                        onClick = { showModelDialog = true }
+                    )
+                }
+                item {
+                    SelectableSettingGroupItem(
+                        title = stringResource(R.string.gemini_api_key),
                         desc = if (geminiApiKey.isNotBlank()) stringResource(R.string.custom_api_key_set)
                                else if (BuildConfig.DEFAULT_GEMINI_API_KEY.isNotBlank()) stringResource(R.string.default_api_key_active)
                                else stringResource(R.string.api_key_not_configured),
-                        icon = Icons.Rounded.AutoAwesome,
+                        icon = Icons.Default.Key,
                         onClick = { showApiKeyDialog = true }
                     )
                 }
@@ -180,6 +194,16 @@ fun SettingsPage(
     )
 
     UpdateDialog()
+
+    GeminiModelDialog(
+        visible = showModelDialog,
+        value = geminiModel,
+        onDismissRequest = { showModelDialog = false },
+        onConfirm = {
+            GeminiModelPreference.put(context, scope, it.trim())
+            showModelDialog = false
+        }
+    )
 
     GeminiApiKeyDialog(
         visible = showApiKeyDialog,

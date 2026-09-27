@@ -70,6 +70,7 @@ data class Settings(
 
     // AI
     val geminiApiKey: String = GeminiApiKeyPreference.default,
+    val geminiModel: String = GeminiModelPreference.default,
 
     // Interaction
     val initialPage: InitialPagePreference = InitialPagePreference.default,
