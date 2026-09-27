@@ -2,12 +2,12 @@ package me.ash.reader.ui.page.home.reading
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.FastOutLinearInEasing
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.VisibilityThreshold
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
@@ -21,7 +21,6 @@ import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.ExperimentalMaterialApi
@@ -32,6 +31,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -154,35 +154,19 @@ fun ReadingPage(
                             val exit = 100
                             val enter = exit * 2
                             if (isHorizontal) {
-                                val slideDirection = if (direction == UPWARD) 1 else -1
-                                (slideInHorizontally(
-                                    initialOffsetX = { it * slideDirection },
-                                    animationSpec =
-                                        spring(
-                                            dampingRatio = .9f,
-                                            stiffness = Spring.StiffnessLow,
-                                            visibilityThreshold = IntOffset.VisibilityThreshold,
-                                        ),
-                                ) +
-                                    fadeIn(
-                                        tween(
-                                            delayMillis = exit,
-                                            durationMillis = enter,
-                                            easing = LinearOutSlowInEasing,
+                                if (initialState.articleId == targetState.articleId) {
+                                    fadeIn(tween(150)) togetherWith fadeOut(tween(150))
+                                } else {
+                                    val slideDirection = if (direction == UPWARD) 1 else -1
+                                    slideInHorizontally(
+                                        initialOffsetX = { it * slideDirection },
+                                        animationSpec = tween(durationMillis = 280, easing = FastOutSlowInEasing),
+                                    ) togetherWith
+                                        slideOutHorizontally(
+                                            targetOffsetX = { -it * slideDirection },
+                                            animationSpec = tween(durationMillis = 280, easing = FastOutSlowInEasing),
                                         )
-                                    )) togetherWith
-                                    (slideOutHorizontally(
-                                        targetOffsetX = { -it * slideDirection },
-                                        animationSpec =
-                                            spring(
-                                                dampingRatio = Spring.DampingRatioNoBouncy,
-                                                stiffness = Spring.StiffnessLow,
-                                                visibilityThreshold = IntOffset.VisibilityThreshold,
-                                            ),
-                                    ) +
-                                        fadeOut(
-                                            tween(durationMillis = exit, easing = FastOutLinearInEasing)
-                                        ))
+                                }
                             } else {
                                 (slideInVertically(
                                     initialOffsetY = { (it * 0.2f * direction).toInt() },
@@ -250,24 +234,11 @@ fun ReadingPage(
                                 val scope = rememberCoroutineScope()
 
                                 val density = LocalDensity.current
-                                val swipeThresholdPx = remember(density) { with(density) { 80.dp.toPx() } }
-                                val horizontalDragOffset = remember { Animatable(0f) }
-
-                                LaunchedEffect(readerState.articleId) {
-                                    horizontalDragOffset.snapTo(0f)
-                                }
+                                val swipeThresholdPx = remember(density) { with(density) { 50.dp.toPx() } }
+                                var dragAccumulator by remember { mutableFloatStateOf(0f) }
 
                                 val draggableState = rememberDraggableState { delta ->
-                                    scope.launch {
-                                        val canDragLeft = isNextArticleAvailable || horizontalDragOffset.value > 0f
-                                        val canDragRight = isPreviousArticleAvailable || horizontalDragOffset.value < 0f
-                                        val allowedDelta = when {
-                                            delta < 0f && !canDragLeft -> delta * 0.2f
-                                            delta > 0f && !canDragRight -> delta * 0.2f
-                                            else -> delta
-                                        }
-                                        horizontalDragOffset.snapTo(horizontalDragOffset.value + allowedDelta)
-                                    }
+                                    dragAccumulator += delta
                                 }
 
                                 LaunchedEffect(bringToTop) {
@@ -311,26 +282,24 @@ fun ReadingPage(
                                         Content(
                                             modifier =
                                                 Modifier
-                                                    .offset { IntOffset(x = horizontalDragOffset.value.toInt(), y = 0) }
                                                     .draggable(
                                                         state = draggableState,
                                                         orientation = Orientation.Horizontal,
                                                         enabled = isHorizontalScrollEnabled,
+                                                        onDragStarted = {
+                                                            dragAccumulator = 0f
+                                                        },
                                                         onDragStopped = { velocity ->
-                                                            if (horizontalDragOffset.value < -swipeThresholdPx || velocity < -800f) {
-                                                                if (isNextArticleAvailable) {
-                                                                    val (id, index) = readerState.nextArticle!!
+                                                            if (dragAccumulator < -swipeThresholdPx || velocity < -800f) {
+                                                                readerState.nextArticle?.let { (id, index) ->
                                                                     onLoadArticle(id, index)
                                                                 }
-                                                            } else if (horizontalDragOffset.value > swipeThresholdPx || velocity > 800f) {
-                                                                if (isPreviousArticleAvailable) {
-                                                                    val (id, index) = readerState.previousArticle!!
+                                                            } else if (dragAccumulator > swipeThresholdPx || velocity > 800f) {
+                                                                readerState.previousArticle?.let { (id, index) ->
                                                                     onLoadArticle(id, index)
                                                                 }
                                                             }
-                                                            scope.launch {
-                                                                horizontalDragOffset.animateTo(0f, spring(stiffness = Spring.StiffnessMediumLow))
-                                                            }
+                                                            dragAccumulator = 0f
                                                         },
                                                     )
                                                     .pullToLoad(
