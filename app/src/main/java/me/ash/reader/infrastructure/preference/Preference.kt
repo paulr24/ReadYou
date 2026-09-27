@@ -78,6 +78,7 @@ fun Preferences.toSettings(): Settings {
         // AI
         geminiApiKey = GeminiApiKeyPreference.fromPreferences(this),
         geminiModel = GeminiModelPreference.fromPreferences(this),
+        aiApiEndpoint = AiApiEndpointPreference.fromPreferences(this),
 
         // Interaction
         initialPage = InitialPagePreference.fromPreferences(this),

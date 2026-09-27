@@ -35,13 +35,16 @@ import androidx.compose.ui.zIndex
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import me.ash.reader.BuildConfig
 import me.ash.reader.R
+import me.ash.reader.infrastructure.preference.AiApiEndpointPreference
 import me.ash.reader.infrastructure.preference.GeminiApiKeyPreference
 import me.ash.reader.infrastructure.preference.GeminiModelPreference
+import me.ash.reader.infrastructure.preference.LocalAiApiEndpoint
 import me.ash.reader.infrastructure.preference.LocalGeminiApiKey
 import me.ash.reader.infrastructure.preference.LocalGeminiModel
 import me.ash.reader.infrastructure.preference.LocalNewVersionNumber
 import me.ash.reader.infrastructure.preference.LocalSkipVersionNumber
 import me.ash.reader.infrastructure.preference.toDisplayName
+import me.ash.reader.ui.component.AiApiEndpointDialog
 import me.ash.reader.ui.component.GeminiApiKeyDialog
 import me.ash.reader.ui.component.GeminiModelDialog
 import me.ash.reader.ui.component.base.Banner
@@ -71,9 +74,11 @@ fun SettingsPage(
     val skipVersion = LocalSkipVersionNumber.current
     val geminiApiKey = LocalGeminiApiKey.current
     val geminiModel = LocalGeminiModel.current
+    val aiApiEndpoint = LocalAiApiEndpoint.current
     val currentVersion by remember { mutableStateOf(context.getCurrentVersion()) }
     var showApiKeyDialog by remember { mutableStateOf(false) }
     var showModelDialog by remember { mutableStateOf(false) }
+    var showEndpointDialog by remember { mutableStateOf(false) }
 
     RYScaffold(
         containerColor = MaterialTheme.colorScheme.surface onLight MaterialTheme.colorScheme.inverseOnSurface,
@@ -153,12 +158,20 @@ fun SettingsPage(
                 }
                 item {
                     SelectableSettingGroupItem(
-                        title = stringResource(R.string.gemini_api_key),
+                        title = stringResource(R.string.ai_api_key_dialog_title),
                         desc = if (geminiApiKey.isNotBlank()) stringResource(R.string.custom_api_key_set)
                                else if (BuildConfig.DEFAULT_GEMINI_API_KEY.isNotBlank()) stringResource(R.string.default_api_key_active)
                                else stringResource(R.string.api_key_not_configured),
                         icon = Icons.Default.Key,
                         onClick = { showApiKeyDialog = true }
+                    )
+                }
+                item {
+                    SelectableSettingGroupItem(
+                        title = stringResource(R.string.ai_api_endpoint),
+                        desc = if (aiApiEndpoint.isNotBlank()) aiApiEndpoint else stringResource(R.string.ai_api_endpoint_default),
+                        icon = Icons.Outlined.Language,
+                        onClick = { showEndpointDialog = true }
                     )
                 }
                 item {
@@ -212,6 +225,16 @@ fun SettingsPage(
         onConfirm = {
             GeminiApiKeyPreference.put(context, scope, it.trim())
             showApiKeyDialog = false
+        }
+    )
+
+    AiApiEndpointDialog(
+        visible = showEndpointDialog,
+        value = aiApiEndpoint,
+        onDismissRequest = { showEndpointDialog = false },
+        onConfirm = {
+            AiApiEndpointPreference.put(context, scope, it.trim())
+            showEndpointDialog = false
         }
     )
 }

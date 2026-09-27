@@ -189,6 +189,7 @@ sealed interface PreferencesKey {
         // AI
         const val geminiApiKey = "geminiApiKey"
         const val geminiModel = "geminiModel"
+        const val aiApiEndpoint = "aiApiEndpoint"
 
         // Interaction
         const val initialPage = "initialPage"
@@ -270,6 +271,7 @@ sealed interface PreferencesKey {
                 // AI
                 StringKey(geminiApiKey),
                 StringKey(geminiModel),
+                StringKey(aiApiEndpoint),
                 // Interaction
                 IntKey(initialPage),
                 IntKey(initialFilter),
@@ -360,6 +362,7 @@ data class DataStoreKey<T>(val key: Preferences.Key<T>, val type: Class<T>) {
         // AI
         const val geminiApiKey = "geminiApiKey"
         const val geminiModel = "geminiModel"
+        const val aiApiEndpoint = "aiApiEndpoint"
 
         // Interaction
         const val initialPage = "initialPage"
@@ -510,6 +513,8 @@ data class DataStoreKey<T>(val key: Preferences.Key<T>, val type: Class<T>) {
                     DataStoreKey(stringPreferencesKey(geminiApiKey), String::class.java),
                 geminiModel to
                     DataStoreKey(stringPreferencesKey(geminiModel), String::class.java),
+                aiApiEndpoint to
+                    DataStoreKey(stringPreferencesKey(aiApiEndpoint), String::class.java),
                 // Interaction
                 initialPage to DataStoreKey(intPreferencesKey(initialPage), Int::class.java),
                 initialFilter to DataStoreKey(intPreferencesKey(initialFilter), Int::class.java),

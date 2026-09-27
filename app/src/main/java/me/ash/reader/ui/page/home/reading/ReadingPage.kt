@@ -40,6 +40,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -236,9 +237,18 @@ fun ReadingPage(
                                 val density = LocalDensity.current
                                 val swipeThresholdPx = remember(density) { with(density) { 50.dp.toPx() } }
                                 var dragAccumulator by remember { mutableFloatStateOf(0f) }
+                                var hasHapticTriggered by remember { mutableStateOf(false) }
 
                                 val draggableState = rememberDraggableState { delta ->
                                     dragAccumulator += delta
+                                    if (!hasHapticTriggered) {
+                                        if ((dragAccumulator <= -swipeThresholdPx && isNextArticleAvailable) ||
+                                            (dragAccumulator >= swipeThresholdPx && isPreviousArticleAvailable)
+                                        ) {
+                                            hapticFeedback.performHapticFeedback(HapticFeedbackType.GestureThresholdActivate)
+                                            hasHapticTriggered = true
+                                        }
+                                    }
                                 }
 
                                 LaunchedEffect(bringToTop) {
@@ -288,18 +298,28 @@ fun ReadingPage(
                                                         enabled = isHorizontalScrollEnabled,
                                                         onDragStarted = {
                                                             dragAccumulator = 0f
+                                                            hasHapticTriggered = false
                                                         },
                                                         onDragStopped = { velocity ->
-                                                            if (dragAccumulator < -swipeThresholdPx || velocity < -800f) {
+                                                            val shouldLoadNext = dragAccumulator <= -swipeThresholdPx || velocity < -800f
+                                                            val shouldLoadPrevious = dragAccumulator >= swipeThresholdPx || velocity > 800f
+                                                            if (shouldLoadNext && isNextArticleAvailable) {
+                                                                if (!hasHapticTriggered) {
+                                                                    hapticFeedback.performHapticFeedback(HapticFeedbackType.GestureThresholdActivate)
+                                                                }
                                                                 readerState.nextArticle?.let { (id, index) ->
                                                                     onLoadArticle(id, index)
                                                                 }
-                                                            } else if (dragAccumulator > swipeThresholdPx || velocity > 800f) {
+                                                            } else if (shouldLoadPrevious && isPreviousArticleAvailable) {
+                                                                if (!hasHapticTriggered) {
+                                                                    hapticFeedback.performHapticFeedback(HapticFeedbackType.GestureThresholdActivate)
+                                                                }
                                                                 readerState.previousArticle?.let { (id, index) ->
                                                                     onLoadArticle(id, index)
                                                                 }
                                                             }
                                                             dragAccumulator = 0f
+                                                            hasHapticTriggered = false
                                                         },
                                                     )
                                                     .pullToLoad(

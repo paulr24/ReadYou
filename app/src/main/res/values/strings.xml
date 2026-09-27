@@ -399,8 +399,14 @@
     <string name="custom_api_key_set">Custom API key configured</string>
     <string name="default_api_key_active">Using default API key</string>
     <string name="api_key_not_configured">Not configured — click to set key</string>
-    <string name="gemini_model">Gemini Model</string>
-    <string name="gemini_model_title">Choose Gemini Model</string>
-    <string name="gemini_model_description">Select a pre-configured model or enter any custom Gemini model ID.</string>
+    <string name="gemini_model">AI Model</string>
+    <string name="gemini_model_title">Choose AI Model</string>
+    <string name="gemini_model_description">Select a pre-configured Gemini model or enter any custom model ID (e.g. gpt-4o-mini, deepseek-chat).</string>
     <string name="gemini_model_custom">Custom model</string>
+    <string name="ai_api_key_dialog_title">AI API Key</string>
+    <string name="ai_api_key_dialog_desc">Enter your API key. Used for Gemini or custom providers (OpenAI, OpenRouter, Groq, DeepSeek, etc.).</string>
+    <string name="ai_api_endpoint">API Endpoint</string>
+    <string name="ai_api_endpoint_title">AI API Endpoint</string>
+    <string name="ai_api_endpoint_desc">Enter a custom OpenAI-compatible API base URL (e.g. https://api.openai.com/v1, https://openrouter.ai/api/v1, https://api.groq.com/openai/v1) or leave blank for default Google Gemini.</string>
+    <string name="ai_api_endpoint_default">Default (Google Gemini)</string>
 </resources>
