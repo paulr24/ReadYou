@@ -393,8 +393,9 @@
 
     <!-- AI Summary -->
     <string name="ai_summary">AI Summary</string>
-    <string name="ai_summary_settings">AI Summarization (Gemini)</string>
-    <string name="gemini_api_key">Gemini API Key</string>
+    <string name="ai_summary_settings">AI Summarization</string>
+    <string name="ai_summary_settings_desc">Model, API key, and endpoint</string>
+    <string name="gemini_api_key">API Key</string>
     <string name="gemini_api_key_placeholder">Enter your Gemini API key</string>
     <string name="custom_api_key_set">Custom API key configured</string>
     <string name="default_api_key_active">Using default API key</string>

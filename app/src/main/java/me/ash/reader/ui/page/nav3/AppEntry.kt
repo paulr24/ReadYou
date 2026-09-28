@@ -37,6 +37,7 @@ import me.ash.reader.ui.page.settings.accounts.AccountDetailsPage
 import me.ash.reader.ui.page.settings.accounts.AccountViewModel
 import me.ash.reader.ui.page.settings.accounts.AccountsPage
 import me.ash.reader.ui.page.settings.accounts.AddAccountsPage
+import me.ash.reader.ui.page.settings.ai.AiSettingsPage
 import me.ash.reader.ui.page.settings.color.ColorAndStylePage
 import me.ash.reader.ui.page.settings.color.DarkThemePage
 import me.ash.reader.ui.page.settings.color.feeds.FeedsPageStylePage
@@ -183,6 +184,7 @@ fun AppEntry(backStack: NavBackStack<NavKey>) {
                                 navigateToAccounts = { backStack.add(Route.Accounts) },
                                 navigateToColorAndStyle = { backStack.add(Route.ColorAndStyle) },
                                 navigateToInteraction = { backStack.add(Route.Interaction) },
+                                navigateToAiSettings = { backStack.add(Route.AiSettings) },
                                 navigateToLanguages = { backStack.add(Route.Languages) },
                                 navigateToTroubleshooting = {
                                     backStack.add(Route.Troubleshooting)
@@ -273,6 +275,7 @@ fun AppEntry(backStack: NavBackStack<NavKey>) {
                             )
                         }
                     Route.LicenseList -> NavEntry(key) { LicenseListPage(onBack = onBack) }
+                    Route.AiSettings -> NavEntry(key) { AiSettingsPage(onBack = onBack) }
                     else -> NavEntry(key) { throw Exception("Unknown destination") }
                 }
             },
