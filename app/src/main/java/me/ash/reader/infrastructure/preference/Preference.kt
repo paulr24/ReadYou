@@ -77,6 +77,8 @@ fun Preferences.toSettings(): Settings {
         readingAlwaysLoadFullContent = ReadingAlwaysLoadFullContentPreference.fromPreferences(this),
         readingPullDownFullContent = ReadingPullDownFullContentPreference.fromPreferences(this),
         readingPullUpAiSummary = ReadingPullUpAiSummaryPreference.fromPreferences(this),
+        readingPullDownAction = ReadingPullDownActionPreference.fromPreferences(this),
+        readingPullUpAction = ReadingPullUpActionPreference.fromPreferences(this),
 
         // AI
         geminiApiKey = GeminiApiKeyPreference.fromPreferences(this),

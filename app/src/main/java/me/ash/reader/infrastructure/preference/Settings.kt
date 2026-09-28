@@ -70,6 +70,8 @@ data class Settings(
     val readingAlwaysLoadFullContent: ReadingAlwaysLoadFullContentPreference = ReadingAlwaysLoadFullContentPreference.default,
     val readingPullDownFullContent: ReadingPullDownFullContentPreference = ReadingPullDownFullContentPreference.default,
     val readingPullUpAiSummary: ReadingPullUpAiSummaryPreference = ReadingPullUpAiSummaryPreference.default,
+    val readingPullDownAction: ReadingPullDownActionPreference = ReadingPullDownActionPreference.default,
+    val readingPullUpAction: ReadingPullUpActionPreference = ReadingPullUpActionPreference.default,
 
     // AI
     val geminiApiKey: String = GeminiApiKeyPreference.default,

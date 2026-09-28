@@ -418,6 +418,10 @@
     <string name="pull_down_to_load_full_content_desc">Pull down at the top of an article to load full content</string>
     <string name="pull_up_for_ai_summary">Pull up for AI summary</string>
     <string name="pull_up_for_ai_summary_desc">Pull up at the bottom of an article to generate AI summary</string>
+    <string name="pull_down_action">Pull down</string>
+    <string name="pull_up_action">Pull up</string>
+    <string name="load_full_content">Load full content</string>
+    <string name="previous_article">Previous article</string>
 
     <!-- AI Summary Prompt -->
     <string name="ai_summary_prompt">Summary Prompt</string>

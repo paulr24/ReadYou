@@ -188,6 +188,8 @@ sealed interface PreferencesKey {
         const val readingAlwaysLoadFullContent = "readingAlwaysLoadFullContent"
         const val readingPullDownFullContent = "readingPullDownFullContent"
         const val readingPullUpAiSummary = "readingPullUpAiSummary"
+        const val readingPullDownAction = "readingPullDownAction"
+        const val readingPullUpAction = "readingPullUpAction"
 
         // AI
         const val geminiApiKey = "geminiApiKey"
@@ -275,6 +277,8 @@ sealed interface PreferencesKey {
                 BooleanKey(readingAlwaysLoadFullContent),
                 BooleanKey(readingPullDownFullContent),
                 BooleanKey(readingPullUpAiSummary),
+                IntKey(readingPullDownAction),
+                IntKey(readingPullUpAction),
                 // AI
                 StringKey(geminiApiKey),
                 StringKey(geminiModel),
@@ -369,6 +373,8 @@ data class DataStoreKey<T>(val key: Preferences.Key<T>, val type: Class<T>) {
         const val readingAlwaysLoadFullContent = "readingAlwaysLoadFullContent"
         const val readingPullDownFullContent = "readingPullDownFullContent"
         const val readingPullUpAiSummary = "readingPullUpAiSummary"
+        const val readingPullDownAction = "readingPullDownAction"
+        const val readingPullUpAction = "readingPullUpAction"
 
         // AI
         const val geminiApiKey = "geminiApiKey"
@@ -527,6 +533,10 @@ data class DataStoreKey<T>(val key: Preferences.Key<T>, val type: Class<T>) {
                     DataStoreKey(booleanPreferencesKey(readingPullDownFullContent), Boolean::class.java),
                 readingPullUpAiSummary to
                     DataStoreKey(booleanPreferencesKey(readingPullUpAiSummary), Boolean::class.java),
+                readingPullDownAction to
+                    DataStoreKey(intPreferencesKey(readingPullDownAction), Int::class.java),
+                readingPullUpAction to
+                    DataStoreKey(intPreferencesKey(readingPullUpAction), Int::class.java),
                 geminiApiKey to
                     DataStoreKey(stringPreferencesKey(geminiApiKey), String::class.java),
                 geminiModel to

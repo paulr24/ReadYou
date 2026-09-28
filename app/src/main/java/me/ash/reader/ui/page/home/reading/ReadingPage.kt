@@ -62,8 +62,10 @@ import me.ash.reader.infrastructure.preference.LocalPullToSwitchArticle
 import me.ash.reader.infrastructure.preference.LocalReadingAutoHideToolbar
 import me.ash.reader.infrastructure.preference.LocalReadingBoldCharacters
 import me.ash.reader.infrastructure.preference.LocalReadingHorizontalScroll
-import me.ash.reader.infrastructure.preference.LocalReadingPullDownFullContent
-import me.ash.reader.infrastructure.preference.LocalReadingPullUpAiSummary
+import me.ash.reader.infrastructure.preference.LocalReadingPullDownAction
+import me.ash.reader.infrastructure.preference.LocalReadingPullUpAction
+import me.ash.reader.infrastructure.preference.ReadingPullDownActionPreference
+import me.ash.reader.infrastructure.preference.ReadingPullUpActionPreference
 import me.ash.reader.infrastructure.preference.LocalReadingTextLineHeight
 import me.ash.reader.infrastructure.preference.not
 import me.ash.reader.ui.ext.collectAsStateValue
@@ -88,10 +90,9 @@ fun ReadingPage(
 ) {
     val context = LocalContext.current
     val hapticFeedback = LocalHapticFeedback.current
-    val isPullToSwitchArticleEnabled = LocalPullToSwitchArticle.current.value
     val isHorizontalScrollEnabled = LocalReadingHorizontalScroll.current.value
-    val isPullDownFullContent = LocalReadingPullDownFullContent.current.value
-    val isPullUpAiSummary = LocalReadingPullUpAiSummary.current.value
+    val pullDownAction = LocalReadingPullDownAction.current
+    val pullUpAction = LocalReadingPullUpAction.current
     val readingUiState = viewModel.readingUiState.collectAsStateValue()
     val readerState = viewModel.readerStateStateFlow.collectAsStateValue()
     val summaryState = viewModel.summaryState.collectAsStateValue()
@@ -213,51 +214,85 @@ fun ReadingPage(
                         remember { it }
                             .run {
                                 val isPullToLoadEnabled =
-                                    isPullDownFullContent ||
-                                        isPullUpAiSummary ||
-                                        (isPullToSwitchArticleEnabled && !isHorizontalScrollEnabled)
+                                    pullDownAction !is ReadingPullDownActionPreference.None ||
+                                        pullUpAction !is ReadingPullUpActionPreference.None
 
                                 val canLoadPrevious =
-                                    isPullDownFullContent ||
-                                        (!isHorizontalScrollEnabled && isPullToSwitchArticleEnabled && isPreviousArticleAvailable)
+                                    when (pullDownAction) {
+                                        is ReadingPullDownActionPreference.None -> false
+                                        is ReadingPullDownActionPreference.PreviousArticle -> isPreviousArticleAvailable
+                                        else -> true
+                                    }
 
                                 val canLoadNext =
-                                    isPullUpAiSummary ||
-                                        (!isHorizontalScrollEnabled && isPullToSwitchArticleEnabled && isNextArticleAvailable)
+                                    when (pullUpAction) {
+                                        is ReadingPullUpActionPreference.None -> false
+                                        is ReadingPullUpActionPreference.NextArticle -> isNextArticleAvailable
+                                        else -> true
+                                    }
+
+                                val previousIcon =
+                                    when (pullDownAction) {
+                                        is ReadingPullDownActionPreference.AiSummary -> Icons.Rounded.AutoAwesome
+                                        is ReadingPullDownActionPreference.FullContent -> Icons.AutoMirrored.Rounded.Article
+                                        is ReadingPullDownActionPreference.PreviousArticle -> Icons.Rounded.KeyboardArrowUp
+                                        else -> Icons.Rounded.KeyboardArrowUp
+                                    }
+
+                                val nextIcon =
+                                    when (pullUpAction) {
+                                        is ReadingPullUpActionPreference.AiSummary -> Icons.Rounded.AutoAwesome
+                                        is ReadingPullUpActionPreference.FullContent -> Icons.AutoMirrored.Rounded.Article
+                                        is ReadingPullUpActionPreference.NextArticle -> Icons.Rounded.KeyboardArrowDown
+                                        else -> Icons.Rounded.KeyboardArrowDown
+                                    }
 
                                 val state =
                                     rememberPullToLoadState(
                                         key = content,
                                         onLoadPrevious =
-                                            when {
-                                                isPullDownFullContent -> {
+                                            when (pullDownAction) {
+                                                is ReadingPullDownActionPreference.None -> null
+                                                is ReadingPullDownActionPreference.AiSummary -> {
+                                                    { viewModel.summarizeArticle() }
+                                                }
+                                                is ReadingPullDownActionPreference.FullContent -> {
                                                     {
                                                         val isAlreadyFull = readerState.content is ReaderState.FullContent
                                                         viewModel.renderFullContent(forceFetch = isAlreadyFull)
                                                     }
                                                 }
-                                                !isHorizontalScrollEnabled && isPullToSwitchArticleEnabled && isPreviousArticleAvailable -> {
-                                                    {
-                                                        readerState.previousArticle?.let { (id, index) ->
-                                                            onLoadArticle(id, index)
+                                                is ReadingPullDownActionPreference.PreviousArticle -> {
+                                                    if (isPreviousArticleAvailable) {
+                                                        {
+                                                            readerState.previousArticle?.let { (id, index) ->
+                                                                onLoadArticle(id, index)
+                                                            }
                                                         }
-                                                    }
+                                                    } else null
                                                 }
-                                                else -> null
                                             },
                                         onLoadNext =
-                                            when {
-                                                isPullUpAiSummary -> {
+                                            when (pullUpAction) {
+                                                is ReadingPullUpActionPreference.None -> null
+                                                is ReadingPullUpActionPreference.AiSummary -> {
                                                     { viewModel.summarizeArticle() }
                                                 }
-                                                !isHorizontalScrollEnabled && isPullToSwitchArticleEnabled && isNextArticleAvailable -> {
+                                                is ReadingPullUpActionPreference.FullContent -> {
                                                     {
-                                                        readerState.nextArticle?.let { (id, index) ->
-                                                            onLoadArticle(id, index)
-                                                        }
+                                                        val isAlreadyFull = readerState.content is ReaderState.FullContent
+                                                        viewModel.renderFullContent(forceFetch = isAlreadyFull)
                                                     }
                                                 }
-                                                else -> null
+                                                is ReadingPullUpActionPreference.NextArticle -> {
+                                                    if (isNextArticleAvailable) {
+                                                        {
+                                                            readerState.nextArticle?.let { (id, index) ->
+                                                                onLoadArticle(id, index)
+                                                            }
+                                                        }
+                                                    } else null
+                                                }
                                             },
                                     )
 
@@ -392,8 +427,8 @@ fun ReadingPage(
                                                 state = state,
                                                 canLoadPrevious = canLoadPrevious,
                                                 canLoadNext = canLoadNext,
-                                                previousIcon = if (isPullDownFullContent) Icons.AutoMirrored.Rounded.Article else Icons.Rounded.KeyboardArrowUp,
-                                                nextIcon = if (isPullUpAiSummary) Icons.Rounded.AutoAwesome else Icons.Rounded.KeyboardArrowDown,
+                                                previousIcon = previousIcon,
+                                                nextIcon = nextIcon,
                                             )
                                         }
                                     }

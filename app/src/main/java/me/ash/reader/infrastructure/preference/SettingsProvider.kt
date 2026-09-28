@@ -129,6 +129,8 @@ class SettingsProvider @Inject constructor(
             LocalReadingAlwaysLoadFullContent provides settings.readingAlwaysLoadFullContent,
             LocalReadingPullDownFullContent provides settings.readingPullDownFullContent,
             LocalReadingPullUpAiSummary provides settings.readingPullUpAiSummary,
+            LocalReadingPullDownAction provides settings.readingPullDownAction,
+            LocalReadingPullUpAction provides settings.readingPullUpAction,
 
             // AI
             LocalGeminiApiKey provides settings.geminiApiKey,

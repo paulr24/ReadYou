@@ -34,7 +34,6 @@ import me.ash.reader.infrastructure.preference.LocalAiApiEndpoint
 import me.ash.reader.infrastructure.preference.LocalAiSummaryPrompt
 import me.ash.reader.infrastructure.preference.LocalGeminiApiKey
 import me.ash.reader.infrastructure.preference.LocalGeminiModel
-import me.ash.reader.infrastructure.preference.LocalReadingPullUpAiSummary
 import me.ash.reader.infrastructure.preference.not
 import me.ash.reader.ui.component.AiApiEndpointDialog
 import me.ash.reader.ui.component.AiSummaryPromptDialog
@@ -43,7 +42,6 @@ import me.ash.reader.ui.component.GeminiModelDialog
 import me.ash.reader.ui.component.base.DisplayText
 import me.ash.reader.ui.component.base.FeedbackIconButton
 import me.ash.reader.ui.component.base.RYScaffold
-import me.ash.reader.ui.component.base.RYSwitch
 import me.ash.reader.ui.component.base.Subtitle
 import me.ash.reader.ui.page.settings.SettingItem
 import me.ash.reader.ui.theme.palette.onLight
@@ -58,7 +56,6 @@ fun AiSettingsPage(
     val geminiModel = LocalGeminiModel.current
     val aiApiEndpoint = LocalAiApiEndpoint.current
     val aiSummaryPrompt = LocalAiSummaryPrompt.current
-    val pullUpAiSummary = LocalReadingPullUpAiSummary.current
 
     var showApiKeyDialog by remember { mutableStateOf(false) }
     var showModelDialog by remember { mutableStateOf(false) }
@@ -115,20 +112,6 @@ fun AiSettingsPage(
                         icon = Icons.AutoMirrored.Rounded.Segment,
                         onClick = { showPromptDialog = true }
                     )
-
-                    Subtitle(
-                        modifier = Modifier.padding(horizontal = 24.dp),
-                        text = stringResource(R.string.reading_page),
-                    )
-                    SettingItem(
-                        title = stringResource(R.string.pull_up_for_ai_summary),
-                        desc = stringResource(R.string.pull_up_for_ai_summary_desc),
-                        onClick = { (!pullUpAiSummary).put(context, scope) },
-                    ) {
-                        RYSwitch(activated = pullUpAiSummary.value) {
-                            (!pullUpAiSummary).put(context, scope)
-                        }
-                    }
                 }
                 item {
                     Spacer(modifier = Modifier.height(24.dp))

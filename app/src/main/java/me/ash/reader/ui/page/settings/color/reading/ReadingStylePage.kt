@@ -39,14 +39,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import me.ash.reader.R
-import me.ash.reader.infrastructure.preference.LocalPullToSwitchArticle
 import me.ash.reader.infrastructure.preference.LocalReadingAlwaysLoadFullContent
 import me.ash.reader.infrastructure.preference.LocalReadingAutoHideToolbar
 import me.ash.reader.infrastructure.preference.LocalReadingBoldCharacters
 import me.ash.reader.infrastructure.preference.LocalReadingFonts
 import me.ash.reader.infrastructure.preference.LocalReadingHorizontalScroll
-import me.ash.reader.infrastructure.preference.LocalReadingPullDownFullContent
-import me.ash.reader.infrastructure.preference.LocalReadingPullUpAiSummary
 import me.ash.reader.infrastructure.preference.LocalReadingPageTonalElevation
 import me.ash.reader.infrastructure.preference.LocalReadingRenderer
 import me.ash.reader.infrastructure.preference.LocalReadingTheme
@@ -85,11 +82,8 @@ fun ReadingStylePage(
     val tonalElevation = LocalReadingPageTonalElevation.current
     val fonts = LocalReadingFonts.current
     val autoHideToolbar = LocalReadingAutoHideToolbar.current
-    val pullToSwitchArticle = LocalPullToSwitchArticle.current
     val horizontalScroll = LocalReadingHorizontalScroll.current
     val alwaysLoadFullContent = LocalReadingAlwaysLoadFullContent.current
-    val pullDownFullContent = LocalReadingPullDownFullContent.current
-    val pullUpAiSummary = LocalReadingPullUpAiSummary.current
     val renderer = LocalReadingRenderer.current
     val boldCharacters = LocalReadingBoldCharacters.current
 
@@ -213,14 +207,6 @@ fun ReadingStylePage(
                     ) {}
 
                     SettingItem(
-                        title = stringResource(id = R.string.pull_to_switch_article),
-                        onClick = { pullToSwitchArticle.toggle(context, scope) }) {
-                        RYSwitch(activated = pullToSwitchArticle.value, onClick = {
-                            pullToSwitchArticle.toggle(context, scope)
-                        })
-                    }
-
-                    SettingItem(
                         title = stringResource(R.string.horizontal_scroll_mode),
                         desc = stringResource(R.string.horizontal_scroll_mode_desc),
                         onClick = { (!horizontalScroll).put(context, scope) }
@@ -237,26 +223,6 @@ fun ReadingStylePage(
                     ) {
                         RYSwitch(activated = alwaysLoadFullContent.value) {
                             (!alwaysLoadFullContent).put(context, scope)
-                        }
-                    }
-
-                    SettingItem(
-                        title = stringResource(R.string.pull_down_to_load_full_content),
-                        desc = stringResource(R.string.pull_down_to_load_full_content_desc),
-                        onClick = { (!pullDownFullContent).put(context, scope) },
-                    ) {
-                        RYSwitch(activated = pullDownFullContent.value) {
-                            (!pullDownFullContent).put(context, scope)
-                        }
-                    }
-
-                    SettingItem(
-                        title = stringResource(R.string.pull_up_for_ai_summary),
-                        desc = stringResource(R.string.pull_up_for_ai_summary_desc),
-                        onClick = { (!pullUpAiSummary).put(context, scope) },
-                    ) {
-                        RYSwitch(activated = pullUpAiSummary.value) {
-                            (!pullUpAiSummary).put(context, scope)
                         }
                     }
                     Subtitle(
