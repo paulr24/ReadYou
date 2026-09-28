@@ -51,12 +51,19 @@ import androidx.compose.ui.unit.isSpecified
 import androidx.compose.ui.unit.sp
 import kotlin.math.abs
 import kotlinx.coroutines.launch
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.Article
+import androidx.compose.material.icons.rounded.AutoAwesome
+import androidx.compose.material.icons.rounded.KeyboardArrowDown
+import androidx.compose.material.icons.rounded.KeyboardArrowUp
 import me.ash.reader.R
 import me.ash.reader.infrastructure.android.TextToSpeechManager
 import me.ash.reader.infrastructure.preference.LocalPullToSwitchArticle
 import me.ash.reader.infrastructure.preference.LocalReadingAutoHideToolbar
 import me.ash.reader.infrastructure.preference.LocalReadingBoldCharacters
 import me.ash.reader.infrastructure.preference.LocalReadingHorizontalScroll
+import me.ash.reader.infrastructure.preference.LocalReadingPullDownFullContent
+import me.ash.reader.infrastructure.preference.LocalReadingPullUpAiSummary
 import me.ash.reader.infrastructure.preference.LocalReadingTextLineHeight
 import me.ash.reader.infrastructure.preference.not
 import me.ash.reader.ui.ext.collectAsStateValue
@@ -83,6 +90,8 @@ fun ReadingPage(
     val hapticFeedback = LocalHapticFeedback.current
     val isPullToSwitchArticleEnabled = LocalPullToSwitchArticle.current.value
     val isHorizontalScrollEnabled = LocalReadingHorizontalScroll.current.value
+    val isPullDownFullContent = LocalReadingPullDownFullContent.current.value
+    val isPullUpAiSummary = LocalReadingPullUpAiSummary.current.value
     val readingUiState = viewModel.readingUiState.collectAsStateValue()
     val readerState = viewModel.readerStateStateFlow.collectAsStateValue()
     val summaryState = viewModel.summaryState.collectAsStateValue()
@@ -203,23 +212,53 @@ fun ReadingPage(
                     ) {
                         remember { it }
                             .run {
+                                val isPullToLoadEnabled =
+                                    isPullDownFullContent ||
+                                        isPullUpAiSummary ||
+                                        (isPullToSwitchArticleEnabled && !isHorizontalScrollEnabled)
+
+                                val canLoadPrevious =
+                                    isPullDownFullContent ||
+                                        (!isHorizontalScrollEnabled && isPullToSwitchArticleEnabled && isPreviousArticleAvailable)
+
+                                val canLoadNext =
+                                    isPullUpAiSummary ||
+                                        (!isHorizontalScrollEnabled && isPullToSwitchArticleEnabled && isNextArticleAvailable)
+
                                 val state =
                                     rememberPullToLoadState(
                                         key = content,
-                                        onLoadNext =
-                                            if (isNextArticleAvailable) {
-                                                {
-                                                    val (id, index) = readerState.nextArticle
-                                                    onLoadArticle(id, index)
-                                                }
-                                            } else null,
                                         onLoadPrevious =
-                                            if (isPreviousArticleAvailable) {
-                                                {
-                                                    val (id, index) = readerState.previousArticle
-                                                    onLoadArticle(id, index)
+                                            when {
+                                                isPullDownFullContent -> {
+                                                    {
+                                                        val isAlreadyFull = readerState.content is ReaderState.FullContent
+                                                        viewModel.renderFullContent(forceFetch = isAlreadyFull)
+                                                    }
                                                 }
-                                            } else null,
+                                                !isHorizontalScrollEnabled && isPullToSwitchArticleEnabled && isPreviousArticleAvailable -> {
+                                                    {
+                                                        readerState.previousArticle?.let { (id, index) ->
+                                                            onLoadArticle(id, index)
+                                                        }
+                                                    }
+                                                }
+                                                else -> null
+                                            },
+                                        onLoadNext =
+                                            when {
+                                                isPullUpAiSummary -> {
+                                                    { viewModel.summarizeArticle() }
+                                                }
+                                                !isHorizontalScrollEnabled && isPullToSwitchArticleEnabled && isNextArticleAvailable -> {
+                                                    {
+                                                        readerState.nextArticle?.let { (id, index) ->
+                                                            onLoadArticle(id, index)
+                                                        }
+                                                    }
+                                                }
+                                                else -> null
+                                            },
                                     )
 
                                 val listState =
@@ -328,7 +367,7 @@ fun ReadingPage(
                                                             if (abs(f) > 2f)
                                                                 isReaderScrollingDown = f < 0f
                                                         },
-                                                        enabled = isPullToSwitchArticleEnabled && !isHorizontalScrollEnabled,
+                                                        enabled = isPullToLoadEnabled,
                                                     ),
                                             contentPadding = paddings,
                                             content = content.text ?: "",
@@ -348,11 +387,13 @@ fun ReadingPage(
                                                 showFullScreenImageViewer = true
                                             },
                                         )
-                                        if (!isHorizontalScrollEnabled) {
+                                        if (isPullToLoadEnabled) {
                                             PullToLoadIndicator(
                                                 state = state,
-                                                canLoadPrevious = isPreviousArticleAvailable,
-                                                canLoadNext = isNextArticleAvailable,
+                                                canLoadPrevious = canLoadPrevious,
+                                                canLoadNext = canLoadNext,
+                                                previousIcon = if (isPullDownFullContent) Icons.AutoMirrored.Rounded.Article else Icons.Rounded.KeyboardArrowUp,
+                                                nextIcon = if (isPullUpAiSummary) Icons.Rounded.AutoAwesome else Icons.Rounded.KeyboardArrowDown,
                                             )
                                         }
                                     }

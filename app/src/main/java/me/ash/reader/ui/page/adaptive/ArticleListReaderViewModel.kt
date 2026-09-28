@@ -47,6 +47,7 @@ import me.ash.reader.infrastructure.di.IODispatcher
 import me.ash.reader.infrastructure.preference.PullToLoadNextFeedPreference
 import me.ash.reader.infrastructure.preference.SettingsProvider
 import me.ash.reader.infrastructure.rss.ReaderCacheHelper
+import me.ash.reader.ui.ext.DataStoreKey
 import me.ash.reader.ui.page.home.reading.SummaryState
 import timber.log.Timber
 
@@ -330,8 +331,9 @@ constructor(
     }
 
     suspend fun ReaderState.renderContent(articleWithFeed: ArticleWithFeed): ReaderState {
+        val alwaysLoadFullContent = settingsProvider.getOrDefault(DataStoreKey.readingAlwaysLoadFullContent, false)
         val contentState =
-            if (articleWithFeed.feed.isFullContent) {
+            if (alwaysLoadFullContent || articleWithFeed.feed.isFullContent) {
                 val fullContent =
                     readerCacheHelper.readFullContent(articleWithFeed.article.id).getOrNull()
                 if (fullContent != null) ReaderState.FullContent(fullContent)
@@ -352,11 +354,12 @@ constructor(
         }
     }
 
-    fun renderFullContent() {
+    fun renderFullContent(forceFetch: Boolean = false) {
+        val article = currentArticle ?: return
         val fetchJob =
             viewModelScope.launch {
                 readerCacheHelper
-                    .readOrFetchFullContent(currentArticle!!)
+                    .readOrFetchFullContent(article, forceFetch = forceFetch)
                     .onSuccess { content ->
                         _readerState.update {
                             it.copy(content = ReaderState.FullContent(content = content))

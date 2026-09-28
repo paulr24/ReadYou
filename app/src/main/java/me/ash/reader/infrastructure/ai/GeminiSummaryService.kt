@@ -8,6 +8,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import me.ash.reader.BuildConfig
 import me.ash.reader.infrastructure.di.IODispatcher
+import me.ash.reader.infrastructure.preference.AiSummaryPromptPreference
 import me.ash.reader.infrastructure.preference.GeminiModelPreference
 import me.ash.reader.infrastructure.preference.SettingsProvider
 import okhttp3.MediaType.Companion.toMediaType
@@ -43,7 +44,13 @@ class GeminiSummaryService @Inject constructor(
             val cleanContent = articleContent.replace(Regex("<[^>]*>"), " ").replace(Regex("\\s+"), " ").trim()
             val truncatedContent = if (cleanContent.length > 15000) cleanContent.substring(0, 15000) else cleanContent
 
-            val prompt = "Summarize the following article in 2-3 concise sentences. Article title: $articleTitle\n\nArticle content:\n$truncatedContent"
+            val customPromptTemplate = settingsProvider.getOrDefault("aiSummaryPrompt", "").trim()
+            val template = if (customPromptTemplate.isNotBlank()) customPromptTemplate else AiSummaryPromptPreference.default
+            val prompt = if (template.contains("{content}")) {
+                template.replace("{title}", articleTitle).replace("{content}", truncatedContent)
+            } else {
+                "$template\n\nArticle title: $articleTitle\n\nArticle content:\n$truncatedContent"
+            }
 
             val jsonMediaType = "application/json; charset=utf-8".toMediaType()
 

@@ -24,6 +24,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.IntOffset
@@ -40,7 +41,9 @@ fun BoxScope.PullToLoadIndicator(
     modifier: Modifier = Modifier,
     state: PullToLoadState,
     canLoadPrevious: Boolean = true,
-    canLoadNext: Boolean = true
+    canLoadNext: Boolean = true,
+    previousIcon: ImageVector = Icons.Rounded.KeyboardArrowUp,
+    nextIcon: ImageVector = Icons.Rounded.KeyboardArrowDown,
 ) {
     val hapticFeedback = LocalHapticFeedback.current
     val status = state.status
@@ -63,8 +66,8 @@ fun BoxScope.PullToLoadIndicator(
     val absFraction = abs(fraction)
 
     val imageVector = when (status) {
-        PulledDown -> Icons.Rounded.KeyboardArrowUp
-        PulledUp -> Icons.Rounded.KeyboardArrowDown
+        PulledDown -> previousIcon
+        PulledUp -> nextIcon
         else -> null
     }
 

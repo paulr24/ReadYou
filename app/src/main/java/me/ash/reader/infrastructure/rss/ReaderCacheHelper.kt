@@ -73,11 +73,13 @@ constructor(
     }
 
     @CheckResult
-    suspend fun readOrFetchFullContent(article: Article): Result<String> {
+    suspend fun readOrFetchFullContent(article: Article, forceFetch: Boolean = false): Result<String> {
         return withContext(ioDispatcher) {
             runCatching {
-                val result = readFullContent(article.id)
-                if (result.isSuccess) return@withContext result
+                if (!forceFetch) {
+                    val result = readFullContent(article.id)
+                    if (result.isSuccess) return@withContext result
+                }
                 return@withContext fetchFullContentInternal(article)
             }
         }

@@ -32,8 +32,11 @@ import me.ash.reader.infrastructure.preference.LocalMarkAsReadOnScroll
 import me.ash.reader.infrastructure.preference.LocalOpenLink
 import me.ash.reader.infrastructure.preference.LocalOpenLinkSpecificBrowser
 import me.ash.reader.infrastructure.preference.LocalPullToSwitchArticle
+import me.ash.reader.infrastructure.preference.LocalReadingPullDownFullContent
+import me.ash.reader.infrastructure.preference.LocalReadingPullUpAiSummary
 import me.ash.reader.infrastructure.preference.LocalSettings
 import me.ash.reader.infrastructure.preference.LocalSharedContent
+import me.ash.reader.infrastructure.preference.not
 import me.ash.reader.infrastructure.preference.LocalSortUnreadArticles
 import me.ash.reader.infrastructure.preference.OpenLinkPreference
 import me.ash.reader.infrastructure.preference.PullToLoadNextFeedPreference
@@ -65,6 +68,8 @@ fun InteractionPage(
     val hideEmptyGroups = LocalHideEmptyGroups.current
     val sortUnreadArticles = LocalSortUnreadArticles.current
     val pullToSwitchArticle = LocalPullToSwitchArticle.current
+    val pullDownFullContent = LocalReadingPullDownFullContent.current
+    val pullUpAiSummary = LocalReadingPullUpAiSummary.current
     val openLink = LocalOpenLink.current
     val openLinkSpecificBrowser = LocalOpenLinkSpecificBrowser.current
     val sharedContent = LocalSharedContent.current
@@ -196,6 +201,22 @@ fun InteractionPage(
                         onClick = { pullToSwitchArticle.toggle(context, scope) }) {
                         RYSwitch(activated = pullToSwitchArticle.value) {
                             pullToSwitchArticle.toggle(context, scope)
+                        }
+                    }
+                    SettingItem(
+                        title = stringResource(R.string.pull_down_to_load_full_content),
+                        desc = stringResource(R.string.pull_down_to_load_full_content_desc),
+                        onClick = { (!pullDownFullContent).put(context, scope) }) {
+                        RYSwitch(activated = pullDownFullContent.value) {
+                            (!pullDownFullContent).put(context, scope)
+                        }
+                    }
+                    SettingItem(
+                        title = stringResource(R.string.pull_up_for_ai_summary),
+                        desc = stringResource(R.string.pull_up_for_ai_summary_desc),
+                        onClick = { (!pullUpAiSummary).put(context, scope) }) {
+                        RYSwitch(activated = pullUpAiSummary.value) {
+                            (!pullUpAiSummary).put(context, scope)
                         }
                     }
                     Spacer(modifier = Modifier.height(24.dp))

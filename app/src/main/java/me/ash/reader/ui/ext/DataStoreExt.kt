@@ -185,11 +185,15 @@ sealed interface PreferencesKey {
         const val readingImageHorizontalPadding = "readingImageHorizontalPadding"
         const val readingImageRoundedCorners = "readingImageRoundedCorners"
         const val readingHorizontalScroll = "readingHorizontalScroll"
+        const val readingAlwaysLoadFullContent = "readingAlwaysLoadFullContent"
+        const val readingPullDownFullContent = "readingPullDownFullContent"
+        const val readingPullUpAiSummary = "readingPullUpAiSummary"
 
         // AI
         const val geminiApiKey = "geminiApiKey"
         const val geminiModel = "geminiModel"
         const val aiApiEndpoint = "aiApiEndpoint"
+        const val aiSummaryPrompt = "aiSummaryPrompt"
 
         // Interaction
         const val initialPage = "initialPage"
@@ -268,10 +272,14 @@ sealed interface PreferencesKey {
                 IntKey(readingImageHorizontalPadding),
                 IntKey(readingImageRoundedCorners),
                 BooleanKey(readingHorizontalScroll),
+                BooleanKey(readingAlwaysLoadFullContent),
+                BooleanKey(readingPullDownFullContent),
+                BooleanKey(readingPullUpAiSummary),
                 // AI
                 StringKey(geminiApiKey),
                 StringKey(geminiModel),
                 StringKey(aiApiEndpoint),
+                StringKey(aiSummaryPrompt),
                 // Interaction
                 IntKey(initialPage),
                 IntKey(initialFilter),
@@ -358,11 +366,15 @@ data class DataStoreKey<T>(val key: Preferences.Key<T>, val type: Class<T>) {
         const val readingImageHorizontalPadding = "readingImageHorizontalPadding"
         const val readingImageRoundedCorners = "readingImageRoundedCorners"
         const val readingHorizontalScroll = "readingHorizontalScroll"
+        const val readingAlwaysLoadFullContent = "readingAlwaysLoadFullContent"
+        const val readingPullDownFullContent = "readingPullDownFullContent"
+        const val readingPullUpAiSummary = "readingPullUpAiSummary"
 
         // AI
         const val geminiApiKey = "geminiApiKey"
         const val geminiModel = "geminiModel"
         const val aiApiEndpoint = "aiApiEndpoint"
+        const val aiSummaryPrompt = "aiSummaryPrompt"
 
         // Interaction
         const val initialPage = "initialPage"
@@ -509,12 +521,20 @@ data class DataStoreKey<T>(val key: Preferences.Key<T>, val type: Class<T>) {
                     DataStoreKey(intPreferencesKey(readingImageRoundedCorners), Int::class.java),
                 readingHorizontalScroll to
                     DataStoreKey(booleanPreferencesKey(readingHorizontalScroll), Boolean::class.java),
+                readingAlwaysLoadFullContent to
+                    DataStoreKey(booleanPreferencesKey(readingAlwaysLoadFullContent), Boolean::class.java),
+                readingPullDownFullContent to
+                    DataStoreKey(booleanPreferencesKey(readingPullDownFullContent), Boolean::class.java),
+                readingPullUpAiSummary to
+                    DataStoreKey(booleanPreferencesKey(readingPullUpAiSummary), Boolean::class.java),
                 geminiApiKey to
                     DataStoreKey(stringPreferencesKey(geminiApiKey), String::class.java),
                 geminiModel to
                     DataStoreKey(stringPreferencesKey(geminiModel), String::class.java),
                 aiApiEndpoint to
                     DataStoreKey(stringPreferencesKey(aiApiEndpoint), String::class.java),
+                aiSummaryPrompt to
+                    DataStoreKey(stringPreferencesKey(aiSummaryPrompt), String::class.java),
                 // Interaction
                 initialPage to DataStoreKey(intPreferencesKey(initialPage), Int::class.java),
                 initialFilter to DataStoreKey(intPreferencesKey(initialFilter), Int::class.java),

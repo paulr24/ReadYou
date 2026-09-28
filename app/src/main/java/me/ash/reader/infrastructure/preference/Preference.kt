@@ -74,11 +74,15 @@ fun Preferences.toSettings(): Settings {
         readingImageRoundedCorners = ReadingImageRoundedCornersPreference.fromPreferences(this),
         readingImageMaximize = ReadingImageMaximizePreference.fromPreferences(this),
         readingHorizontalScroll = ReadingHorizontalScrollPreference.fromPreferences(this),
+        readingAlwaysLoadFullContent = ReadingAlwaysLoadFullContentPreference.fromPreferences(this),
+        readingPullDownFullContent = ReadingPullDownFullContentPreference.fromPreferences(this),
+        readingPullUpAiSummary = ReadingPullUpAiSummaryPreference.fromPreferences(this),
 
         // AI
         geminiApiKey = GeminiApiKeyPreference.fromPreferences(this),
         geminiModel = GeminiModelPreference.fromPreferences(this),
         aiApiEndpoint = AiApiEndpointPreference.fromPreferences(this),
+        aiSummaryPrompt = AiSummaryPromptPreference.fromPreferences(this),
 
         // Interaction
         initialPage = InitialPagePreference.fromPreferences(this),

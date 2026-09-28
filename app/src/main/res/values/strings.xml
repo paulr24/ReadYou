@@ -410,4 +410,19 @@
     <string name="ai_api_endpoint_title">AI API Endpoint</string>
     <string name="ai_api_endpoint_desc">Enter a custom OpenAI-compatible API base URL (e.g. https://api.openai.com/v1, https://openrouter.ai/api/v1, https://api.groq.com/openai/v1) or leave blank for default Google Gemini.</string>
     <string name="ai_api_endpoint_default">Default (Google Gemini)</string>
+
+    <!-- Reading & Gestures -->
+    <string name="always_load_full_content">Always load full content</string>
+    <string name="always_load_full_content_desc">Automatically parse full article content when opening articles</string>
+    <string name="pull_down_to_load_full_content">Pull down for full content</string>
+    <string name="pull_down_to_load_full_content_desc">Pull down at the top of an article to load full content</string>
+    <string name="pull_up_for_ai_summary">Pull up for AI summary</string>
+    <string name="pull_up_for_ai_summary_desc">Pull up at the bottom of an article to generate AI summary</string>
+
+    <!-- AI Summary Prompt -->
+    <string name="ai_summary_prompt">Summary Prompt</string>
+    <string name="ai_summary_prompt_title">AI Summary Prompt</string>
+    <string name="ai_summary_prompt_desc">Customize the prompt sent to the AI. Use {title} and {content} as placeholders for article data.</string>
+    <string name="ai_summary_prompt_default">Default prompt</string>
+    <string name="ai_summary_prompt_reset">Reset to default</string>
 </resources>

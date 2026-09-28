@@ -67,11 +67,15 @@ data class Settings(
     val readingImageRoundedCorners: Int = ReadingImageRoundedCornersPreference.default,
     val readingImageMaximize: ReadingImageMaximizePreference = ReadingImageMaximizePreference.default,
     val readingHorizontalScroll: ReadingHorizontalScrollPreference = ReadingHorizontalScrollPreference.default,
+    val readingAlwaysLoadFullContent: ReadingAlwaysLoadFullContentPreference = ReadingAlwaysLoadFullContentPreference.default,
+    val readingPullDownFullContent: ReadingPullDownFullContentPreference = ReadingPullDownFullContentPreference.default,
+    val readingPullUpAiSummary: ReadingPullUpAiSummaryPreference = ReadingPullUpAiSummaryPreference.default,
 
     // AI
     val geminiApiKey: String = GeminiApiKeyPreference.default,
     val geminiModel: String = GeminiModelPreference.default,
     val aiApiEndpoint: String = AiApiEndpointPreference.default,
+    val aiSummaryPrompt: String = AiSummaryPromptPreference.default,
 
     // Interaction
     val initialPage: InitialPagePreference = InitialPagePreference.default,
