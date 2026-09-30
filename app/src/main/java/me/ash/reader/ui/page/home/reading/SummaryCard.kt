@@ -1,6 +1,10 @@
 package me.ash.reader.ui.page.home.reading
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -32,7 +36,11 @@ fun SummaryCard(
     onDismiss: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    AnimatedVisibility(visible = summaryState !is SummaryState.Idle) {
+    AnimatedVisibility(
+        visible = summaryState !is SummaryState.Idle,
+        enter = expandVertically() + fadeIn(),
+        exit = shrinkVertically() + fadeOut(),
+    ) {
         Card(
             modifier = modifier
                 .fillMaxWidth()

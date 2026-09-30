@@ -421,6 +421,7 @@ constructor(
                         ReaderState.PrefetchResult(
                             articleId = prev.articleWithFeed.article.id,
                             index = previousIndex,
+                            title = prev.articleWithFeed.article.title,
                         )
                     break
                 }
@@ -436,6 +437,7 @@ constructor(
                         ReaderState.PrefetchResult(
                             articleId = next.articleWithFeed.article.id,
                             index = nextIndex,
+                            title = next.articleWithFeed.article.title,
                         )
                     break
                 }
@@ -457,6 +459,7 @@ constructor(
     }
 
     fun summarizeArticle() {
+        if (_summaryState.value is SummaryState.Loading) return
         val article = currentArticle ?: return
         val title = article.title ?: ""
         val content = _readerState.value.content.text ?: article.rawDescription ?: ""
@@ -498,7 +501,7 @@ data class ReaderState(
     val nextArticle: PrefetchResult? = null,
     val previousArticle: PrefetchResult? = null,
 ) {
-    data class PrefetchResult(val articleId: String, val index: Int)
+    data class PrefetchResult(val articleId: String, val index: Int, val title: String? = null)
 
     sealed interface ContentState {
         val text: String?

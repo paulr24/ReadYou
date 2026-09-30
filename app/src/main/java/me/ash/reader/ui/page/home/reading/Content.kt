@@ -132,7 +132,7 @@ fun Content(
                         state = listState,
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
-                        item {
+                        item(key = "header_and_summary") {
                             // Top bar height
                             Spacer(modifier = Modifier.height(64.dp))
                             // padding

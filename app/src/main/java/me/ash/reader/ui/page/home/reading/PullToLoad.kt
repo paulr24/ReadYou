@@ -237,15 +237,15 @@ class PullToLoadState internal constructor(
     }
 
     internal fun onRelease(): Float {
-
         when (status) {
             Status.PulledDown -> {
-                onLoadPrevious.value?.let { it() } ?: animateDistanceTo(0f)
-
+                animateDistanceTo(0f)
+                onLoadPrevious.value?.invoke()
             }
 
             Status.PulledUp -> {
-                onLoadNext.value?.let { it() } ?: animateDistanceTo(0f)
+                animateDistanceTo(0f)
+                onLoadNext.value?.invoke()
             }
 
             else -> {
@@ -269,18 +269,23 @@ class PullToLoadState internal constructor(
             mutatorMutex.mutate {
                 val initialValue = offsetPulled
                 val isAnimateDown = targetValue < initialValue
-                animate(
-                    initialValue = initialValue,
-                    targetValue = targetValue,
-                    initialVelocity = velocity,
-                    animationSpec = animationSpec
-                ) { value, _ ->
-                    offsetPulled = value
-                    if (isAnimateDown) {
-                        if (value - targetValue < 10f) isSettled = true
-                    } else {
-                        if (targetValue - value < 10f) isSettled = true
+                try {
+                    animate(
+                        initialValue = initialValue,
+                        targetValue = targetValue,
+                        initialVelocity = velocity,
+                        animationSpec = animationSpec
+                    ) { value, _ ->
+                        offsetPulled = value
+                        if (isAnimateDown) {
+                            if (value - targetValue < 10f) isSettled = true
+                        } else {
+                            if (targetValue - value < 10f) isSettled = true
+                        }
                     }
+                } finally {
+                    offsetPulled = targetValue
+                    isSettled = true
                 }
             }
         }
