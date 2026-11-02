@@ -80,7 +80,9 @@ import me.ash.reader.infrastructure.android.TextToSpeechManager
 import me.ash.reader.infrastructure.preference.LocalPullToSwitchArticle
 import me.ash.reader.infrastructure.preference.LocalReadingAutoHideToolbar
 import me.ash.reader.infrastructure.preference.LocalReadingBoldCharacters
+import me.ash.reader.infrastructure.preference.LocalReadingColorTheme
 import me.ash.reader.infrastructure.preference.LocalReadingHorizontalScroll
+import me.ash.reader.infrastructure.preference.ReadingColorThemePreference
 import me.ash.reader.infrastructure.preference.LocalReadingPullDownAction
 import me.ash.reader.infrastructure.preference.LocalReadingPullUpAction
 import me.ash.reader.infrastructure.preference.ReadingPullDownActionPreference
@@ -139,6 +141,13 @@ fun ReadingPage(
     //    }
 
     var bringToTop by remember { mutableStateOf(false) }
+    val readingColorTheme = LocalReadingColorTheme.current
+    val currentTheme = MaterialTheme.colorScheme
+    val readingColorScheme = remember(readingColorTheme, currentTheme) {
+        readingColorTheme.getColorScheme(currentTheme)
+    }
+
+    MaterialTheme(colorScheme = readingColorScheme) {
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.surface,
@@ -702,6 +711,7 @@ fun ReadingPage(
             }
         },
     )
+    }
     if (showFullScreenImageViewer) {
 
         ReaderImageViewer(

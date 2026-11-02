@@ -72,6 +72,7 @@ data class Settings(
     val readingPullUpAiSummary: ReadingPullUpAiSummaryPreference = ReadingPullUpAiSummaryPreference.default,
     val readingPullDownAction: ReadingPullDownActionPreference = ReadingPullDownActionPreference.default,
     val readingPullUpAction: ReadingPullUpActionPreference = ReadingPullUpActionPreference.default,
+    val readingColorTheme: ReadingColorThemePreference = ReadingColorThemePreference.default,
 
     // AI
     val geminiApiKey: String = GeminiApiKeyPreference.default,

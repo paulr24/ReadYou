@@ -429,4 +429,13 @@
     <string name="ai_summary_prompt_desc">Customize the prompt sent to the AI. Use {title} and {content} as placeholders for article data.</string>
     <string name="ai_summary_prompt_default">Default prompt</string>
     <string name="ai_summary_prompt_reset">Reset to default</string>
+    <!-- Reading Color Themes -->
+    <string name="reading_color_theme">Color theme</string>
+    <string name="reading_color_theme_desc">Reading view background and typography colors</string>
+    <string name="color_theme_default">System (Material You)</string>
+    <string name="color_theme_sepia">Sepia (Warm Paper)</string>
+    <string name="color_theme_light">Light (Pure White)</string>
+    <string name="color_theme_dark">Dark (Charcoal)</string>
+    <string name="color_theme_oled">OLED (Pure Black)</string>
+    <string name="color_theme_mint">Mint (Eye Care)</string>
 </resources>

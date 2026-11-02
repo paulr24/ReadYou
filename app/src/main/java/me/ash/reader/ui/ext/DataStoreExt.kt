@@ -190,6 +190,7 @@ sealed interface PreferencesKey {
         const val readingPullUpAiSummary = "readingPullUpAiSummary"
         const val readingPullDownAction = "readingPullDownAction"
         const val readingPullUpAction = "readingPullUpAction"
+        const val readingColorTheme = "readingColorTheme"
 
         // AI
         const val geminiApiKey = "geminiApiKey"
@@ -279,6 +280,7 @@ sealed interface PreferencesKey {
                 BooleanKey(readingPullUpAiSummary),
                 IntKey(readingPullDownAction),
                 IntKey(readingPullUpAction),
+                IntKey(readingColorTheme),
                 // AI
                 StringKey(geminiApiKey),
                 StringKey(geminiModel),
@@ -375,6 +377,7 @@ data class DataStoreKey<T>(val key: Preferences.Key<T>, val type: Class<T>) {
         const val readingPullUpAiSummary = "readingPullUpAiSummary"
         const val readingPullDownAction = "readingPullDownAction"
         const val readingPullUpAction = "readingPullUpAction"
+        const val readingColorTheme = "readingColorTheme"
 
         // AI
         const val geminiApiKey = "geminiApiKey"

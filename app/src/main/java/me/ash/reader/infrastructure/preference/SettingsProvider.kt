@@ -131,6 +131,7 @@ class SettingsProvider @Inject constructor(
             LocalReadingPullUpAiSummary provides settings.readingPullUpAiSummary,
             LocalReadingPullDownAction provides settings.readingPullDownAction,
             LocalReadingPullUpAction provides settings.readingPullUpAction,
+            LocalReadingColorTheme provides settings.readingColorTheme,
 
             // AI
             LocalGeminiApiKey provides settings.geminiApiKey,

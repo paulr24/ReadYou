@@ -17,7 +17,15 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import me.ash.reader.infrastructure.preference.LocalReadingColorTheme
+import me.ash.reader.infrastructure.preference.ReadingColorThemePreference
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.Segment
@@ -86,6 +94,9 @@ fun ReadingStylePage(
     val alwaysLoadFullContent = LocalReadingAlwaysLoadFullContent.current
     val renderer = LocalReadingRenderer.current
     val boldCharacters = LocalReadingBoldCharacters.current
+    val readingColorTheme = LocalReadingColorTheme.current
+
+    var colorThemeDialogVisible by remember { mutableStateOf(false) }
 
     var tonalElevationDialogVisible by remember { mutableStateOf(false) }
     var rendererDialogVisible by remember { mutableStateOf(false) }
@@ -157,12 +168,75 @@ fun ReadingStylePage(
                     Spacer(modifier = Modifier.height(24.dp))
                 }
 
+                // Color Theme swatches
+                item {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 24.dp)
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        ReadingColorThemePreference.values.forEach { themeOption ->
+                            val isSelected = themeOption == readingColorTheme
+                            Surface(
+                                shape = RoundedCornerShape(20.dp),
+                                color = themeOption.previewSurface,
+                                contentColor = themeOption.previewOnSurface,
+                                shadowElevation = if (isSelected) 3.dp else 1.dp,
+                                border = if (isSelected) BorderStroke(2.dp, MaterialTheme.colorScheme.primary) else BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.25f)),
+                                modifier = Modifier.clip(RoundedCornerShape(20.dp)).clickable { themeOption.put(context, scope) }
+                            ) {
+                                Row(
+                                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    Surface(
+                                        shape = CircleShape,
+                                        color = themeOption.previewOnSurface,
+                                        modifier = Modifier.size(10.dp)
+                                    ) {}
+                                    Text(
+                                        text = themeOption.toDesc(context).substringBefore(" ("),
+                                        style = MaterialTheme.typography.labelMedium,
+                                        color = themeOption.previewOnSurface,
+                                    )
+                                }
+                            }
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+
                 // General
                 item {
                     Subtitle(
                         modifier = Modifier.padding(horizontal = 24.dp),
                         text = stringResource(R.string.general)
                     )
+                    SettingItem(
+                        title = stringResource(R.string.reading_color_theme),
+                        desc = readingColorTheme.toDesc(context),
+                        onClick = { colorThemeDialogVisible = true },
+                    ) {
+                        Surface(
+                            shape = CircleShape,
+                            color = readingColorTheme.previewSurface,
+                            modifier = Modifier.size(24.dp),
+                            shadowElevation = 1.dp,
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.4f)),
+                        ) {
+                            Box(contentAlignment = Alignment.Center) {
+                                Surface(
+                                    shape = CircleShape,
+                                    color = readingColorTheme.previewOnSurface,
+                                    modifier = Modifier.size(8.dp)
+                                ) {}
+                            }
+                        }
+                    }
                     SettingItem(
                         title = stringResource(R.string.content_renderer),
                         desc = renderer.toDesc(context),
@@ -329,5 +403,20 @@ fun ReadingStylePage(
         }
     ) {
         fontsDialogVisible = false
+    }
+
+    RadioDialog(
+        visible = colorThemeDialogVisible,
+        title = stringResource(R.string.reading_color_theme),
+        options = ReadingColorThemePreference.values.map {
+            RadioDialogOption(
+                text = it.toDesc(context),
+                selected = it == readingColorTheme,
+            ) {
+                it.put(context, scope)
+            }
+        }
+    ) {
+        colorThemeDialogVisible = false
     }
 }

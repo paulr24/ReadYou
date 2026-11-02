@@ -79,6 +79,7 @@ fun Preferences.toSettings(): Settings {
         readingPullUpAiSummary = ReadingPullUpAiSummaryPreference.fromPreferences(this),
         readingPullDownAction = ReadingPullDownActionPreference.fromPreferences(this),
         readingPullUpAction = ReadingPullUpActionPreference.fromPreferences(this),
+        readingColorTheme = ReadingColorThemePreference.fromPreferences(this),
 
         // AI
         geminiApiKey = GeminiApiKeyPreference.fromPreferences(this),
