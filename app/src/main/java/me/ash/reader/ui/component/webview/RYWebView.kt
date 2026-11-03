@@ -13,6 +13,8 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.compose.foundation.isSystemInDarkTheme
+import me.ash.reader.infrastructure.preference.LocalReadingColorTheme
 import me.ash.reader.infrastructure.preference.LocalOpenLink
 import me.ash.reader.infrastructure.preference.LocalOpenLinkSpecificBrowser
 import me.ash.reader.infrastructure.preference.LocalReadingBoldCharacters
@@ -68,9 +70,12 @@ fun RYWebView(
     val codeBgColor: Int =
         MaterialTheme.colorScheme.surfaceColorAtElevation((tonalElevation.value + 6).dp).toArgb()
     val boldCharacters = LocalReadingBoldCharacters.current
+    val readingColorTheme = LocalReadingColorTheme.current
+    val isSystemDark = isSystemInDarkTheme()
+    val isDark = readingColorTheme.isDark(isSystemDark)
 
     val webView by
-        remember(backgroundColor) {
+        remember(backgroundColor, readingColorTheme) {
             mutableStateOf(
                 WebViewLayout.get(
                     context = context,
@@ -84,6 +89,7 @@ fun RYWebView(
                             },
                         ),
                     onImageClick = onImageClick,
+                    isDark = isDark,
                 )
             )
         }
@@ -103,6 +109,9 @@ fun RYWebView(
                 Log.i("RLog", "maxWidth: ${maxWidth}")
                 Log.i("RLog", "readingFont: ${context.filesDir.absolutePath}")
                 Log.i("RLog", "CustomWebView: ${content}")
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+                    settings.isAlgorithmicDarkeningAllowed = isDark
+                }
                 settings.defaultFontSize = fontSize
                 loadDataWithBaseURL(
                     null,

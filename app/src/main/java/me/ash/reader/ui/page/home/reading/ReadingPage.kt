@@ -418,7 +418,12 @@ fun ReadingPage(
                                     Box(
                                         modifier = Modifier
                                             .fillMaxSize()
-                                            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f)),
+                                            .background(
+                                                if (isHorizontalScrollEnabled)
+                                                    MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f)
+                                                else
+                                                    MaterialTheme.colorScheme.surface
+                                            ),
                                         contentAlignment = Alignment.Center,
                                     ) {
                                         // Predictive preview underneath
@@ -532,6 +537,8 @@ fun ReadingPage(
                                         Content(
                                             modifier =
                                                 Modifier
+                                                    .fillMaxSize()
+                                                    .background(color = MaterialTheme.colorScheme.surface)
                                                     .then(
                                                         if (isHorizontalScrollEnabled) {
                                                             Modifier

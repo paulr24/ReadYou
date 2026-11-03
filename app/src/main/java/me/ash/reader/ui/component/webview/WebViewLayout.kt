@@ -15,6 +15,7 @@ object WebViewLayout {
         readingFontsPreference: ReadingFontsPreference,
         webViewClient: WebViewClient,
         onImageClick: ((imgUrl: String, altText: String) -> Unit)? = null,
+        isDark: Boolean = false,
     ) =
         WebView(context).apply {
             this.webViewClient = webViewClient
@@ -54,7 +55,7 @@ object WebViewLayout {
                 )
                 setSupportZoom(false)
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-                    isAlgorithmicDarkeningAllowed = true
+                    isAlgorithmicDarkeningAllowed = isDark
                 }
             }
         }

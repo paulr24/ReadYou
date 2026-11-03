@@ -8,6 +8,7 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -65,7 +66,9 @@ sealed class ReadingColorThemePreference(
 
     override fun put(context: Context, scope: CoroutineScope) {
         scope.launch {
-            context.dataStore.put(DataStoreKey.readingColorTheme, value)
+            context.dataStore.edit { preferences ->
+                preferences[key] = value
+            }
         }
     }
 
@@ -87,6 +90,13 @@ sealed class ReadingColorThemePreference(
             Dark -> DarkColorScheme
             Oled -> OledColorScheme
             Mint -> MintColorScheme
+        }
+
+    fun isDark(systemInDarkTheme: Boolean): Boolean =
+        when (this) {
+            Default -> systemInDarkTheme
+            Sepia, Light, Mint -> false
+            Dark, Oled -> true
         }
 
     companion object {

@@ -27,6 +27,8 @@ import androidx.compose.material3.Text
 import me.ash.reader.infrastructure.preference.LocalReadingColorTheme
 import me.ash.reader.infrastructure.preference.ReadingColorThemePreference
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material3.Icon
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.Segment
 import androidx.compose.material.icons.outlined.Image
@@ -95,6 +97,10 @@ fun ReadingStylePage(
     val renderer = LocalReadingRenderer.current
     val boldCharacters = LocalReadingBoldCharacters.current
     val readingColorTheme = LocalReadingColorTheme.current
+    val currentTheme = MaterialTheme.colorScheme
+    val readingColorScheme = remember(readingColorTheme, currentTheme) {
+        readingColorTheme.getColorScheme(currentTheme)
+    }
 
     var colorThemeDialogVisible by remember { mutableStateOf(false) }
 
@@ -114,6 +120,7 @@ fun ReadingStylePage(
             } ?: context.showToast("Cannot get activity result with launcher")
         }
 
+    MaterialTheme(colorScheme = readingColorScheme) {
     RYScaffold(
         containerColor = MaterialTheme.colorScheme.surface onLight MaterialTheme.colorScheme.inverseOnSurface,
         navigationIcon = {
@@ -179,7 +186,7 @@ fun ReadingStylePage(
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         ReadingColorThemePreference.values.forEach { themeOption ->
-                            val isSelected = themeOption == readingColorTheme
+                            val isSelected = themeOption.value == readingColorTheme.value
                             Surface(
                                 shape = RoundedCornerShape(20.dp),
                                 color = themeOption.previewSurface,
@@ -193,11 +200,20 @@ fun ReadingStylePage(
                                     verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                                 ) {
-                                    Surface(
-                                        shape = CircleShape,
-                                        color = themeOption.previewOnSurface,
-                                        modifier = Modifier.size(10.dp)
-                                    ) {}
+                                    if (isSelected) {
+                                        Icon(
+                                            imageVector = Icons.Rounded.Check,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(14.dp),
+                                            tint = themeOption.previewOnSurface,
+                                        )
+                                    } else {
+                                        Surface(
+                                            shape = CircleShape,
+                                            color = themeOption.previewOnSurface,
+                                            modifier = Modifier.size(10.dp)
+                                        ) {}
+                                    }
                                     Text(
                                         text = themeOption.toDesc(context).substringBefore(" ("),
                                         style = MaterialTheme.typography.labelMedium,
@@ -411,12 +427,13 @@ fun ReadingStylePage(
         options = ReadingColorThemePreference.values.map {
             RadioDialogOption(
                 text = it.toDesc(context),
-                selected = it == readingColorTheme,
+                selected = it.value == readingColorTheme.value,
             ) {
                 it.put(context, scope)
             }
         }
     ) {
         colorThemeDialogVisible = false
+    }
     }
 }

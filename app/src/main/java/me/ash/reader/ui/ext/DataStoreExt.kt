@@ -540,6 +540,8 @@ data class DataStoreKey<T>(val key: Preferences.Key<T>, val type: Class<T>) {
                     DataStoreKey(intPreferencesKey(readingPullDownAction), Int::class.java),
                 readingPullUpAction to
                     DataStoreKey(intPreferencesKey(readingPullUpAction), Int::class.java),
+                readingColorTheme to
+                    DataStoreKey(intPreferencesKey(readingColorTheme), Int::class.java),
                 geminiApiKey to
                     DataStoreKey(stringPreferencesKey(geminiApiKey), String::class.java),
                 geminiModel to
